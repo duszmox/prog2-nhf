@@ -89,9 +89,6 @@ Match *Szo::match(const Szo &s) const
     Match *matches = new Match[length];
     bool visited[length];
     for (int i = 0; i < length; i++)
-        visited[i] = false;
-    for (int i = 0; i < length; i++)
-    {
         if (betuk[i] == s.betuk[i])
         {
             visited[i] = true;
@@ -99,16 +96,20 @@ Match *Szo::match(const Szo &s) const
             matches[i].setBetu(new Betu(s.betuk[i]));
         }
         else
-            for (int j = 0; j < length; j++)
+            visited[i] = false;
+
+    for (int i = 0; i < length; i++)
+    {
+        for (int j = 0; j < length; j++)
+        {
+            if (betuk[i] == s.betuk[j] && !visited[j])
             {
-                if (betuk[i] == s.betuk[j] && !visited[j])
-                {
-                    matches[i].setMatch(PARTIAL);
-                    matches[i].setBetu(new Betu(s.betuk[j]));
-                    visited[j] = true;
-                    break;
-                }
+                matches[i].setMatch(PARTIAL);
+                matches[i].setBetu(new Betu(s.betuk[j]));
+                visited[j] = true;
+                break;
             }
+        }
     }
     for (int i = 0; i < length; i++)
     {
@@ -123,4 +124,67 @@ Match *Szo::match(const Szo &s) const
 Betu &Szo::operator[](int i) const
 {
     return betuk[i];
+}
+
+Szo::Szo(const Betu *b, int l)
+{
+    length = l;
+    betuk = new Betu[length];
+    for (int i = 0; i < length; i++)
+    {
+        betuk[i] = b[i];
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, const Szo &s)
+{
+    for (int i = 0; i < s.getLength(); i++)
+    {
+        os << s.getBetuk()[i];
+    }
+    return os;
+}
+bool Szo::reverseMatch(Match *m) const
+{
+    int length = getLength();
+    bool visited[length];
+    for (int i = 0; i < length; i++)
+    {
+        if (m[i].getMatch() == MATCH)
+        {
+            if (*m[i].getBetu() != betuk[i])
+            {
+                return false;
+            }
+            else
+            {
+                visited[i] = true;
+            }
+        }
+    }
+    for (int i = 0; i < length; i++)
+    {
+        if (visited[i])
+        {
+            continue;
+        }
+        if (m[i].getMatch() == PARTIAL)
+        {
+            bool found = false;
+            for (int j = 0; j < length; j++)
+            {
+                if (*m[i].getBetu() == betuk[j] && !visited[j])
+                {
+                    visited[j] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
