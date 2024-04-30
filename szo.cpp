@@ -104,9 +104,9 @@ Match *Szo::match(const Szo &s) const
         {
             if (betuk[i] == s.betuk[j] && !visited[j])
             {
-                matches[i].setMatch(PARTIAL);
-                matches[i].setBetu(new Betu(s.betuk[j]));
-                visited[j] = true;
+                matches[j].setMatch(PARTIAL);
+                matches[j].setBetu(new Betu(s.betuk[j]));
+                visited[i] = true;
                 break;
             }
         }

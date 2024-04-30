@@ -28,6 +28,7 @@ public:
         currentWordIndex = random % answerListCount;
         currentWord = &answerList[currentWordIndex];
         maxGuesses = 6;
+        guessWord(Szo("apple"));
     }
     GameMenu() : Menu(), guessedWords(nullptr), guessedWordsCount(0), matches(nullptr)
     {

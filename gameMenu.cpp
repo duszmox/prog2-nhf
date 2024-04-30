@@ -13,7 +13,6 @@ int GameMenu::getRemainingPossibleWordsCount() const
             if (answerList[i].reverseMatch(matches[j]))
             {
                 found = true;
-                std::cout << answerList[i] << std::endl;
                 break;
             }
         }
@@ -109,14 +108,38 @@ void GameMenu::readPossibleWords(char *filename)
 }
 void GameMenu::show() const
 {
-    for (int i = 0; i < possibleWordsCount; i++)
+    std::cout << "Game menu" << std::endl;
+    std::cout << "Remaining possible words: " << getRemainingPossibleWordsCount() << std::endl;
+    std::cout << "Current word: " << *currentWord << std::endl;
+
+    for (int i = 0; i < guessedWordsCount; i++)
     {
-        std::cout << i + 1 << ". " << possibleWords[i] << std::endl;
+        for (int j = 0; j < this->wordLength; j++)
+        {
+            switch (matches[i][j].getMatch())
+            {
+            case MATCH:
+                // color green
+                std::cout << "\033[32m" << guessedWords[i][j] << "\033[0m ";
+                break;
+            case PARTIAL:
+                // color yellow
+                std::cout << "\033[33m" << guessedWords[i][j] << "\033[0m ";
+                break;
+            default:
+                std::cout << guessedWords[i][j] << " ";
+                break;
+            }
+        }
+        std::cout << std::endl;
     }
-    std::cout << "0. Exit" << std::endl;
-    for (int i = 0; i < answerListCount; i++)
+    for (int i = 0; i < maxGuesses - guessedWordsCount; i++)
     {
-        std::cout << i + 1 << ". " << answerList[i] << std::endl;
+        for (int j = 0; j < this->wordLength; j++)
+        {
+            std::cout << "_ ";
+        }
+        std::cout << std::endl;
     }
 }
 void GameMenu::readAnswerList(char *filename)

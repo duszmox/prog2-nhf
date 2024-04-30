@@ -52,6 +52,7 @@ void Menu::addItem(const char *text, Menu *subMenu)
 
 void Menu::show() const
 {
+    // std::cout << "\033[2J\033[1;1H";
     int selection = 0;
     for (int i = 0; i < itemCount; i++)
     {
@@ -98,4 +99,76 @@ void (*MenuItem::getAction())()
 Menu *MenuItem::getSubMenu() const
 {
     return subMenu;
+}
+
+void MenuItem::operator=(const MenuItem &m)
+{
+    text = new char[strlen(m.text) + 1];
+    strcpy(text, m.text);
+    action = m.action;
+    subMenu = m.subMenu;
+    selectable = m.selectable;
+}
+
+bool Menu::operator==(const Menu &m) const
+{
+    if (this == nullptr)
+    {
+        if (&m == nullptr)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    if (&m == nullptr)
+    {
+        return false;
+    }
+    if (itemCount != m.itemCount)
+    {
+        return false;
+    }
+    for (int i = 0; i < itemCount; i++)
+    {
+        if (items[i] != m.items[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Menu::operator!=(const Menu &m) const
+{
+    return !(*this == m);
+}
+
+MenuItem &Menu::operator[](int i) const
+{
+    return items[i];
+}
+
+bool MenuItem::operator==(const MenuItem &m) const
+{
+    if (strcmp(text, m.text) != 0)
+    {
+        return false;
+    }
+    if (action != m.action)
+    {
+        return false;
+    }
+    if (subMenu != m.subMenu)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool MenuItem::operator!=(const MenuItem &m) const
+{
+    return !(*this == m);
 }

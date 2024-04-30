@@ -5,3 +5,5 @@ latex/
 stats.csv
 *.o
 .DS_Store
+main
+main.o

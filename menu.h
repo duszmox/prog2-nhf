@@ -11,10 +11,15 @@ public:
     Menu(Menu *p);
     Menu(const Menu &m);
     Menu() : parent(nullptr), itemCount(0), items(nullptr) {}
-    ~Menu();
+    virtual ~Menu();
     void addItem(const char *text, void (*action)());
     void addItem(const char *text, Menu *subMenu);
     virtual void show() const;
+    Menu &getParent() const { return *parent; };
+    MenuItem &operator[](int i) const;
+    bool operator==(const Menu &m) const;
+    bool operator!=(const Menu &m) const;
+    inline int getItemCount() const { return itemCount; };
 };
 
 class MenuItem
@@ -33,5 +38,8 @@ public:
     void (*getAction())();
     Menu *getSubMenu() const;
     inline bool getSelectable() const { return selectable; };
+    void operator=(const MenuItem &m);
+    bool operator==(const MenuItem &m) const;
+    bool operator!=(const MenuItem &m) const;
 };
 #endif
