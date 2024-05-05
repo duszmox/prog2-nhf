@@ -291,3 +291,19 @@ const char *Szo::c_str() const
     s[length] = '\0';
     return s;
 }
+
+Szo Szo::operator+(const Szo &s) const
+{
+    Szo temp;
+    temp.length = length + s.length;
+    temp.betuk = new Betu[temp.length];
+    for (int i = 0; i < length; i++)
+    {
+        temp.betuk[i] = betuk[i];
+    }
+    for (int i = 0; i < s.length; i++)
+    {
+        temp.betuk[i + length] = s.betuk[i];
+    }
+    return temp;
+}

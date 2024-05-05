@@ -5,11 +5,55 @@
 
 void StatsMenu::show() const
 {
+    // clear screen
+    std::cout << "\033[2J\033[1;1H";
     std::cout << "Stats menu" << std::endl;
+    int attempsPerCount[maxAttempts + 2];
+    int percentagePerCount[maxAttempts + 2];
+    for (int i = 0; i <= maxAttempts; i++)
+    {
+        attempsPerCount[i] = 0;
+    }
     for (int i = 0; i < statsCount; i++)
     {
-        std::cout << stats[i].getSzo() << " " << stats[i].getAttempts() << std::endl;
+        attempsPerCount[stats[i].getAttempts() == -1 ? maxAttempts + 1 : stats[i].getAttempts()]++;
     }
+    for (int i = 0; i <= maxAttempts + 1; i++)
+    {
+        percentagePerCount[i] = attempsPerCount[i] * 100 / statsCount;
+    }
+    for (int i = 0; i <= maxAttempts + 1; i++)
+    {
+        Szo bar;
+        int progressBarLength = 12;
+        int filledBlocks = percentagePerCount[i] / (100 / progressBarLength);
+        int emptyBlocks = progressBarLength - filledBlocks;
+
+        // Fill the progress bar string with filled and empty blocks
+        for (int i = 0; i < filledBlocks - 1; ++i)
+        {
+            bar = bar + Szo("\u2588");
+        }
+        if (filledBlocks != 0)
+        {
+            bar = bar + Szo("\u2593"); // Unicode FULL BLOCK character
+        }
+        for (int i = filledBlocks; i < progressBarLength; ++i)
+        {
+            bar = bar + Szo("\u2591"); // Unicode LIGHT SHADE character
+        }
+
+        if (i == maxAttempts + 1)
+        {
+            std::cout << "X" << ": " << bar << " " << percentagePerCount[i] << "%" << std::endl;
+        }
+        else
+        {
+            std::cout << i << ": " << bar << " " << percentagePerCount[i] << "%" << std::endl;
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "Press 0 to return to the main menu." << std::endl;
 }
 
 void StatsMenu::readStats(char *filename = "stats.csv")
@@ -20,38 +64,45 @@ void StatsMenu::readStats(char *filename = "stats.csv")
         throw std::runtime_error("Error opening file.");
     }
     statsCount = 0;
-    int bufferSize = 64;
-    char *word = new char[bufferSize];
-    int length = 0;
-    char ch;
-    int attempts = 0;
     Szo szo;
-    while (file.get(ch))
+    char attempts;
+    while (file >> attempts >> szo)
     {
-        if (isspace(ch) || ch == EOF)
+        Stats *newStats = new Stats[statsCount + 1];
+        for (int i = 0; i < statsCount; i++)
         {
-            break;
+            newStats[i] = stats[i];
         }
-
-        if (length >= bufferSize - 1)
-        {
-            bufferSize *= 2;
-            char *temp = new char[bufferSize];
-            strncpy(temp, word, length);
-            delete[] word;
-            word = temp;
-        }
-
-        word[length++] = ch;
+        newStats[statsCount] = Stats(szo, attempts == 'X' ? -1 : std::atoi(&attempts));
+        delete[] stats;
+        stats = newStats;
+        statsCount++;
     }
-    word[length] = '\0';
-    szo = Szo(word);
-    file >> attempts;
-    stats[statsCount++] = Stats(szo, attempts);
-    delete[] word;
 }
 
-StatsMenu::~StatsMenu()
+void StatsMenu::updateStats()
 {
-    delete[] stats;
+    readStats("stats.csv");
+}
+
+void StatsMenu::saveStats(char *filename, char attempts, Szo szo)
+{
+    std::ofstream
+        file(filename, std::ios_base::app);
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Error opening file.");
+    }
+    file << attempts << " " << szo << std::endl;
+}
+
+void StatsMenu::saveStats(char *filename, int attempts, Szo szo)
+{
+    std::ofstream
+        file(filename, std::ios_base::app);
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Error opening file.");
+    }
+    file << attempts << " " << szo << std::endl;
 }

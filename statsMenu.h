@@ -19,14 +19,27 @@ class StatsMenu : public Menu
 {
     Stats *stats;
     int statsCount;
+    int maxAttempts;
 
 public:
-    StatsMenu(Menu *p) : Menu(p), stats(nullptr), statsCount(0) {}
-    StatsMenu() : Menu(), stats(nullptr), statsCount(0) {}
+    StatsMenu(Menu *p) : Menu(p), stats(nullptr), statsCount(0), maxAttempts(0)
+    {
+        readStats("stats.csv");
+    }
+    StatsMenu() : Menu(), stats(nullptr), statsCount(0), maxAttempts(0)
+    {
+        readStats("stats.csv");
+    }
     void show() const;
     void readStats(char *filename);
-    ~StatsMenu();
+    ~StatsMenu() { delete[] stats; }
     Stats operator[](int i) const { return stats[i]; }
+    void setMaxAttempts(int m) { maxAttempts = m; }
+    void updateStats();
+    void saveStats(char *filename, char attempts, Szo szo);
+    void saveStats(char *filename, int attempts, Szo szo);
+    void saveStats(char attempts, Szo szo) { saveStats("stats.csv", attempts, szo); }
+    void saveStats(int attempts, Szo szo) { saveStats("stats.csv", attempts, szo); }
 };
 
 #endif

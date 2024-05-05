@@ -1,7 +1,7 @@
 #include "szo.h"
 #include <iostream>
 #include "gameMenu.h"
-// #include "statsMenu.h"
+#include "statsMenu.h"
 #include "memtrace.h"
 #include <cstdlib>
 
@@ -9,9 +9,10 @@ int main()
 {
     Menu mainMenu(nullptr);
     GameMenu gameMenu(&mainMenu);
-    // StatsMenu statsMenu(&mainMenu);
+    StatsMenu statsMenu(&mainMenu);
     mainMenu.addItem("Game", &gameMenu);
-    // mainMenu.addItem("Stats", &statsMenu);
+    mainMenu.addItem("Stats", &statsMenu);
+    statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
 
     Menu *currMenu = &mainMenu;
     while (true)
@@ -25,7 +26,7 @@ int main()
                 std::cout << "Congratulations! You have guessed the word!" << std::endl;
                 std::cout << "The word was: " << *gameMenu.getCurrentWord() << std::endl;
                 std::cout << "Enter 0 to return to the main menu." << std::endl;
-
+                statsMenu.saveStats(gameMenu.getGuessedWordsCount(), *gameMenu.getCurrentWord());
                 Szo guess;
                 std::cin >> guess;
                 if (guess == "0")
@@ -43,6 +44,7 @@ int main()
             else if (gameMenu.getGuessedWordsCount() == gameMenu.getMaxGuesses())
             {
                 std::cout << "Enter 0 to return to the main menu or 1 to restart." << std::endl;
+                statsMenu.saveStats('X', *gameMenu.getCurrentWord());
                 Szo guess;
                 std::cin >> guess;
                 if (guess.getLength() > 1)
@@ -138,10 +140,13 @@ int main()
                 {
                     currMenu->clearError();
                     currMenu = (*currMenu)[selection - 1].getSubMenu();
-                    std::cout << "Entering " << std::endl;
                     if (currMenu == &gameMenu)
                     {
                         gameMenu.resetGame();
+                    }
+                    if (currMenu == &statsMenu)
+                    {
+                        statsMenu.updateStats();
                     }
                 }
                 else

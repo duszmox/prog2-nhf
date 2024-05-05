@@ -25,6 +25,7 @@ public:
     bool reverseMatch(Match *m) const;
     bool containsNumber() const;
     Szo &operator+=(const Betu &b);
+    Szo operator+(const Szo &s) const;
     const char *c_str() const;
 };
 std::ostream &operator<<(std::ostream &os, const Szo &s);

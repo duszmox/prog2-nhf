@@ -1,9 +1,9 @@
 
 PROG = main
-PROG_O = $(PROG).o szo.o betu.o menu.o gameMenu.o match.o # program object fajljai
+PROG_O = $(PROG).o szo.o betu.o menu.o gameMenu.o statsMenu.o match.o # program object fajljai
 
 # Rajzatablas valtozathoz torolje a kommentet a kovetkezo sorbol
-PROG_H = szo.h betu.h menu.h  gameMenu.h match.h # program header fajljai
+PROG_H = szo.h betu.h menu.h statsMenu.h gameMenu.h match.h # program header fajljai
 
 # Rajzatablas valtozathoz torolje a kommentet a kovetkezo sorbol
 
@@ -11,10 +11,10 @@ PROG_L =              # program libjei
 MTRACE_O = memtrace.o # memtrace object fajl
 MTRACE_H = memtrace.h # memtrace header fajlja
 
-CXX = g++ # a C fordito neve
+CXX = clang++ # a C fordito neve
 
 #fordítasi opciok
-CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0
+CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 
 CXXFLAGS += -g # es legyeb debug info is
 LDFLAGS = -g # debug a linkelesnel is kell
 
