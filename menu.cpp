@@ -66,7 +66,6 @@ void Menu::addItem(const char *text, Menu *subMenu)
 
 void Menu::show() const
 {
-    std::cout << "\033[2J\033[1;1H";
     int selection = 0;
     for (int i = 0; i < itemCount; i++)
     {
@@ -209,4 +208,14 @@ void Menu::clearError()
 Szo *Menu::getError() const
 {
     return error;
+}
+void Menu::showLogo() const
+{
+    std::cout << "\033[2J\033[1;1H";
+    std::cout << "██╗    ██╗ ██████╗ ██████╗ ██████╗ ██╗     ███████╗" << std::endl;
+    std::cout << "██║    ██║██╔═══██╗██╔══██╗██╔══██╗██║     ██╔════╝" << std::endl;
+    std::cout << "██║ █╗ ██║██║   ██║██████╔╝██║  ██║██║     █████╗" << std::endl;
+    std::cout << "██║███╗██║██║   ██║██╔══██╗██║  ██║██║     ██╔══╝" << std::endl;
+    std::cout << "╚███╔███╔╝╚██████╔╝██║  ██║██████╔╝███████╗███████╗" << std::endl;
+    std::cout << " ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝" << std::endl;
 }

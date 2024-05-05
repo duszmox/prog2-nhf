@@ -18,6 +18,7 @@ int main()
     while (true)
     {
         bool errorChanged = false;
+        currMenu->showLogo();
         currMenu->show();
         if (currMenu == &gameMenu)
         {
@@ -25,25 +26,34 @@ int main()
             {
                 std::cout << "Congratulations! You have guessed the word!" << std::endl;
                 std::cout << "The word was: " << *gameMenu.getCurrentWord() << std::endl;
-                std::cout << "Enter 0 to return to the main menu." << std::endl;
+                std::cout << "(1) Retry" << std::endl;
+                std::cout << "(0) Back" << std::endl;
                 statsMenu.saveStats(gameMenu.getGuessedWordsCount(), *gameMenu.getCurrentWord());
                 Szo guess;
                 std::cin >> guess;
-                if (guess == "0")
-                {
-                    currMenu = &mainMenu;
-                    continue;
-                }
-                else
+                if (guess.getLength() > 1)
                 {
                     currMenu->setError("Invalid input!");
-                    errorChanged = true;
                     continue;
+                }
+                switch (guess[0].getBetu())
+                {
+                case '0':
+                    currMenu = &mainMenu;
+                    break;
+                case '1':
+                    gameMenu.resetGame();
+                    break;
+                default:
+                    currMenu->setError("Invalid input!");
+                    errorChanged = true;
+                    break;
                 }
             }
             else if (gameMenu.getGuessedWordsCount() == gameMenu.getMaxGuesses())
             {
-                std::cout << "Enter 0 to return to the main menu or 1 to restart." << std::endl;
+                std::cout << "(1) Retry" << std::endl;
+                std::cout << "(0) Back" << std::endl;
                 statsMenu.saveStats('X', *gameMenu.getCurrentWord());
                 Szo guess;
                 std::cin >> guess;
@@ -99,6 +109,12 @@ int main()
                 }
                 if (invalid)
                 {
+                    continue;
+                }
+                if (isInWords(gameMenu.getGuessedWords(), gameMenu.getGuessedWordsCount(), guess))
+                {
+                    currMenu->setError("You have already guessed this word!");
+                    errorChanged = true;
                     continue;
                 }
                 try

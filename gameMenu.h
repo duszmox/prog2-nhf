@@ -67,6 +67,7 @@ public:
     void resetGame();
     int getGuessedWordsCount() const { return guessedWordsCount; }
     int getMaxGuesses() const { return maxGuesses; }
+    Szo *getGuessedWords() const { return guessedWords; }
     ~GameMenu()
     {
         delete[] possibleWords;

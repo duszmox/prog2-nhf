@@ -122,11 +122,12 @@ void GameMenu::readPossibleWords(char *filename)
 }
 void GameMenu::show() const
 {
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "Game menu" << std::endl;
     std::cout << "Remaining possible words: " << getRemainingPossibleWordsCount() << std::endl;
     std::cout << "Current word: " << *currentWord << std::endl;
-
+    if (getError() != nullptr)
+    {
+        std::cout << "\033[1;31m" << *getError() << "\033[0m" << std::endl;
+    }
     for (int i = 0; i < guessedWordsCount; i++)
     {
         for (int j = 0; j < this->wordLength; j++)
@@ -145,10 +146,6 @@ void GameMenu::show() const
             }
         }
         std::cout << std::endl;
-    }
-    if (getError() != nullptr)
-    {
-        std::cout << "\033[1;31m" << *getError() << "\033[0m" << std::endl;
     }
     bool everythingMatched = true;
     if (guessedWordsCount == 0)
@@ -178,6 +175,12 @@ void GameMenu::show() const
         {
             for (int j = 0; j < this->wordLength; j++)
             {
+                if (i == 0 && j == 0)
+                {
+                    std::cout << "[|] ";
+                    continue;
+                }
+
                 std::cout << "[ ] ";
             }
             std::cout << std::endl;

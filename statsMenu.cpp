@@ -5,9 +5,7 @@
 
 void StatsMenu::show() const
 {
-    // clear screen
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "Stats menu" << std::endl;
+    std::cout << "Number of guesses per game (%)" << std::endl;
     int attempsPerCount[maxAttempts + 2];
     int percentagePerCount[maxAttempts + 2];
     for (int i = 0; i <= maxAttempts; i++)

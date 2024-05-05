@@ -25,6 +25,7 @@ public:
     void setError(const Szo s);
     void clearError();
     Szo *getError() const;
+    void showLogo() const;
 };
 
 class MenuItem
