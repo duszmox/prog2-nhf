@@ -16,6 +16,7 @@ int main()
     Menu *currMenu = &mainMenu;
     while (true)
     {
+        bool errorChanged = false;
         currMenu->show();
         if (currMenu == &gameMenu)
         {
@@ -34,7 +35,8 @@ int main()
                 }
                 else
                 {
-                    std::cout << "Invalid input!" << std::endl;
+                    currMenu->setError("Invalid input!");
+                    errorChanged = true;
                     continue;
                 }
             }
@@ -45,7 +47,7 @@ int main()
                 std::cin >> guess;
                 if (guess.getLength() > 1)
                 {
-                    std::cout << "Invalid input!" << std::endl;
+                    currMenu->setError("Invalid input!");
                     continue;
                 }
                 switch (guess[0].getBetu())
@@ -58,7 +60,8 @@ int main()
                     break;
 
                 default:
-                    std::cout << "Invalid input!" << std::endl;
+                    currMenu->setError("Invalid input!");
+                    errorChanged = true;
                     break;
                 }
             }
@@ -78,7 +81,8 @@ int main()
                         }
                         continue;
                     }
-                    std::cout << "Invalid guess length!" << std::endl;
+                    currMenu->setError("Invalid guess length!");
+                    errorChanged = true;
                     continue;
                 }
                 bool invalid = false;
@@ -86,7 +90,7 @@ int main()
                 {
                     if (guess[i].getBetu() < 'a' || guess[i].getBetu() > 'z')
                     {
-                        std::cout << "Invalid character!" << std::endl;
+                        currMenu->setError("Invalid character!");
                         invalid = true;
                         break;
                     }
@@ -101,7 +105,7 @@ int main()
                 }
                 catch (const std::exception &e)
                 {
-                    std::cout << e.what() << std::endl;
+                    currMenu->setError(Szo(e.what()));
                 }
             }
         }
@@ -126,12 +130,15 @@ int main()
             {
                 if (selection < 0 || selection > currMenu->getItemCount())
                 {
-                    std::cout << "Invalid selection!" << std::endl;
+                    currMenu->setError("Invalid selection!");
+                    errorChanged = true;
                     continue;
                 }
                 if ((*currMenu)[selection - 1].getSubMenu() != nullptr)
                 {
+                    currMenu->clearError();
                     currMenu = (*currMenu)[selection - 1].getSubMenu();
+                    std::cout << "Entering " << std::endl;
                     if (currMenu == &gameMenu)
                     {
                         gameMenu.resetGame();
@@ -142,6 +149,10 @@ int main()
                     (*currMenu)[selection - 1].getAction()();
                 }
             }
+        }
+        if (!errorChanged)
+        {
+            currMenu->clearError();
         }
     }
 }

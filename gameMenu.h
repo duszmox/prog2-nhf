@@ -35,6 +35,7 @@ public:
         currentWord = &answerList[currentWordIndex];
 
         maxGuesses = 6;
+        clearError();
     }
     GameMenu() : Menu(), guessedWords(nullptr), guessedWordsCount(0), matches(nullptr)
     {
@@ -51,6 +52,7 @@ public:
 #endif
         currentWord = &answerList[currentWordIndex];
         maxGuesses = 6;
+        clearError();
     }
     void show() const;
     int getRemainingPossibleWordsCount() const;

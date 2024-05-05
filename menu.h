@@ -1,16 +1,18 @@
 #ifndef MENU_H
 #define MENU_H
+#include "szo.h"
 class MenuItem;
 class Menu
 {
     MenuItem *items;
     Menu *parent;
     int itemCount;
+    Szo *error = nullptr;
 
 public:
     Menu(Menu *p);
     Menu(const Menu &m);
-    Menu() : parent(nullptr), itemCount(0), items(nullptr) {}
+    Menu() : parent(nullptr), itemCount(0), items(nullptr), error(nullptr) {}
     virtual ~Menu();
     void addItem(const char *text, void (*action)());
     void addItem(const char *text, Menu *subMenu);
@@ -20,6 +22,9 @@ public:
     bool operator==(const Menu &m) const;
     bool operator!=(const Menu &m) const;
     inline int getItemCount() const { return itemCount; };
+    void setError(const Szo s);
+    void clearError();
+    Szo *getError() const;
 };
 
 class MenuItem

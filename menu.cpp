@@ -1,12 +1,14 @@
 #include "menu.h"
 #include <iostream>
 #include <cstring>
+#include "szo.h"
 
 Menu::Menu(Menu *p)
 {
     parent = p;
     itemCount = 0;
     items = nullptr;
+    error = nullptr;
 }
 
 Menu::Menu(const Menu &m)
@@ -18,10 +20,22 @@ Menu::Menu(const Menu &m)
     {
         items[i] = m.items[i];
     }
+    if (m.error != nullptr)
+    {
+        setError(*m.error);
+    }
+    else
+    {
+        clearError();
+    }
 }
 Menu::~Menu()
 {
     delete[] items;
+    if (error != nullptr)
+    {
+        delete error;
+    }
 }
 
 void Menu::addItem(const char *text, void (*action)())
@@ -52,7 +66,7 @@ void Menu::addItem(const char *text, Menu *subMenu)
 
 void Menu::show() const
 {
-    // std::cout << "\033[2J\033[1;1H";
+    std::cout << "\033[2J\033[1;1H";
     int selection = 0;
     for (int i = 0; i < itemCount; i++)
     {
@@ -67,6 +81,10 @@ void Menu::show() const
         }
     }
     std::cout << "0. Exit" << std::endl;
+    if (error != nullptr)
+    {
+        std::cout << "\033[1;31m" << *error << "\033[0m" << std::endl;
+    }
 }
 
 MenuItem::MenuItem(const char *t, void (*a)())
@@ -171,4 +189,24 @@ bool MenuItem::operator==(const MenuItem &m) const
 bool MenuItem::operator!=(const MenuItem &m) const
 {
     return !(*this == m);
+}
+
+void Menu::setError(const Szo s)
+{
+    clearError();
+    error = new Szo(s);
+}
+
+void Menu::clearError()
+{
+    if (error != nullptr)
+    {
+        delete error;
+        error = nullptr;
+    }
+}
+
+Szo *Menu::getError() const
+{
+    return error;
 }

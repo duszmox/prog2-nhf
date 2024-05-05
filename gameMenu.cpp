@@ -122,6 +122,7 @@ void GameMenu::readPossibleWords(char *filename)
 }
 void GameMenu::show() const
 {
+    std::cout << "\033[2J\033[1;1H";
     std::cout << "Game menu" << std::endl;
     std::cout << "Remaining possible words: " << getRemainingPossibleWordsCount() << std::endl;
     std::cout << "Current word: " << *currentWord << std::endl;
@@ -133,17 +134,21 @@ void GameMenu::show() const
             switch (matches[i][j].getMatch())
             {
             case MATCH:
-                std::cout << "\033[32m" << guessedWords[i][j] << "\033[0m ";
+                std::cout << "\033[32m[" << guessedWords[i][j] << "]\033[0m ";
                 break;
             case PARTIAL:
-                std::cout << "\033[33m" << guessedWords[i][j] << "\033[0m ";
+                std::cout << "\033[33m[" << guessedWords[i][j] << "]\033[0m ";
                 break;
             default:
-                std::cout << guessedWords[i][j] << " ";
+                std::cout << "[" << guessedWords[i][j] << "] ";
                 break;
             }
         }
         std::cout << std::endl;
+    }
+    if (getError() != nullptr)
+    {
+        std::cout << "\033[1;31m" << *getError() << "\033[0m" << std::endl;
     }
     bool everythingMatched = true;
     if (guessedWordsCount == 0)
@@ -173,7 +178,7 @@ void GameMenu::show() const
         {
             for (int j = 0; j < this->wordLength; j++)
             {
-                std::cout << "_ ";
+                std::cout << "[ ] ";
             }
             std::cout << std::endl;
         }
