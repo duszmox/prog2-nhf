@@ -13,6 +13,7 @@ public:
     int operator==(const Betu &b) const;
     int operator!=(const Betu &b) const;
     int operator==(char c) const;
+    bool isNumber() const;
 };
 std::ostream &operator<<(std::ostream &os, const Betu &b);
 #endif

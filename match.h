@@ -1,6 +1,8 @@
-#include "betu.h"
 #ifndef MATCH_H
 #define MATCH_H
+#include "memtrace.h"
+#include "betu.h"
+
 enum MatchTypes
 {
     MATCH,
@@ -27,5 +29,6 @@ public:
         }
     }
 };
+std::ostream &operator<<(std::ostream &os, const Match &m);
 
 #endif

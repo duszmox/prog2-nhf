@@ -1,26 +1,40 @@
 #include "gameMenu.h"
 #include "szo.h"
+#include "memtrace.h"
 #include <fstream>
 int GameMenu::getRemainingPossibleWordsCount() const
 {
     int currentPossibleWordsCount = 0;
+    Szo *temp = new Szo[possibleWordsCount];
 
-    for (int i = 0; i < answerListCount; i++)
+    if (guessedWordsCount == 0)
     {
-        bool found = false;
-        for (int j = 0; j < guessedWordsCount; j++)
+        delete[] temp;
+        return possibleWordsCount;
+    }
+    for (int i = 0; i < guessedWordsCount; i++)
+    {
+        Szo *currArr = i == 0 ? possibleWords : temp;
+        int currCount = i == 0 ? possibleWordsCount : currentPossibleWordsCount;
+        Szo *tempArr = i == 0 ? temp : new Szo[currentPossibleWordsCount];
+        int tempCount = 0;
+        for (int j = 0; j < currCount; j++)
         {
-            if (answerList[i].reverseMatch(matches[j]))
+            if (currArr[j].reverseMatch(matches[i]))
             {
-                found = true;
-                break;
+                tempArr[tempCount++] = currArr[j];
+                // if (i == guessedWordsCount - 1)
+                // {
+                //     std::cout << currArr[j] << std::endl;
+                // }
             }
         }
-        if (found)
-        {
-            currentPossibleWordsCount++;
-        }
+        if (i != 0)
+            delete[] temp;
+        temp = tempArr;
+        currentPossibleWordsCount = tempCount;
     }
+    delete[] temp;
     return currentPossibleWordsCount;
 }
 void GameMenu::readPossibleWords(char *filename)
@@ -28,7 +42,7 @@ void GameMenu::readPossibleWords(char *filename)
     std::ifstream file(filename);
     if (!file.is_open())
     {
-        std::cerr << "Error opening file." << std::endl;
+        throw std::runtime_error("Error opening file.");
     }
     possibleWordsCount = 0;
     int bufferSize = 64;
@@ -91,7 +105,7 @@ void GameMenu::readPossibleWords(char *filename)
         };
         if (k != 0)
         {
-            std::cerr << "Error reading file." << std::endl;
+            throw std::runtime_error("Error reading file.");
             delete[] buffer;
             break;
         }
@@ -119,11 +133,9 @@ void GameMenu::show() const
             switch (matches[i][j].getMatch())
             {
             case MATCH:
-                // color green
                 std::cout << "\033[32m" << guessedWords[i][j] << "\033[0m ";
                 break;
             case PARTIAL:
-                // color yellow
                 std::cout << "\033[33m" << guessedWords[i][j] << "\033[0m ";
                 break;
             default:
@@ -133,14 +145,38 @@ void GameMenu::show() const
         }
         std::cout << std::endl;
     }
-    for (int i = 0; i < maxGuesses - guessedWordsCount; i++)
+    bool everythingMatched = true;
+    if (guessedWordsCount == 0)
     {
-        for (int j = 0; j < this->wordLength; j++)
-        {
-            std::cout << "_ ";
-        }
-        std::cout << std::endl;
+        everythingMatched = false;
     }
+    else
+        for (int i = 0; i < this->wordLength; i++)
+        {
+            if (matches[guessedWordsCount - 1][i].getMatch() != MATCH)
+            {
+                everythingMatched = false;
+                break;
+            }
+        }
+    if (everythingMatched)
+    {
+        std::cout << "You won!" << std::endl;
+    }
+    else if (guessedWordsCount == maxGuesses)
+    {
+        std::cout << "You lost!" << std::endl;
+        std::cout << "The word was: " << *currentWord << std::endl;
+    }
+    else
+        for (int i = 0; i < maxGuesses - guessedWordsCount; i++)
+        {
+            for (int j = 0; j < this->wordLength; j++)
+            {
+                std::cout << "_ ";
+            }
+            std::cout << std::endl;
+        }
 }
 void GameMenu::readAnswerList(char *filename)
 {
@@ -148,7 +184,7 @@ void GameMenu::readAnswerList(char *filename)
     std::ifstream file(filename);
     if (!file.is_open())
     {
-        std::cerr << "Error opening file." << std::endl;
+        throw std::runtime_error("Error opening file.");
     }
     int bufferSize = 64;
     char *word = new char[bufferSize];
@@ -210,7 +246,7 @@ void GameMenu::readAnswerList(char *filename)
         };
         if (k != 0)
         {
-            std::cerr << "Error reading file." << std::endl;
+            throw std::runtime_error("Error reading file.");
             delete[] buffer;
             break;
         }
@@ -228,13 +264,8 @@ void GameMenu::readAnswerList(char *filename)
 
 void GameMenu::guessWord(const Szo &word)
 {
-    if (guessedWords == nullptr)
-    {
-        guessedWords = new Szo[1];
-        guessedWords[0] = word;
-        guessedWordsCount++;
-    }
-    else
+
+    if (isInWords(possibleWords, possibleWordsCount, word) || isInWords(answerList, answerListCount, word))
     {
         Szo *temp = new Szo[guessedWordsCount + 1];
         for (int i = 0; i < guessedWordsCount; i++)
@@ -246,12 +277,69 @@ void GameMenu::guessWord(const Szo &word)
         guessedWords = temp;
         guessedWordsCount++;
     }
+    else
+    {
+        throw std::runtime_error("Invalid guess!");
+        return;
+    }
     if (matches != nullptr)
+    {
+        for (int i = 0; i < guessedWordsCount - 1; i++)
+        {
+            delete[] matches[i];
+        }
         delete[] matches;
+    }
 
     matches = new Match *[guessedWordsCount];
     for (int i = 0; i < guessedWordsCount; i++)
     {
         matches[i] = currentWord->match(guessedWords[i]);
     }
+    bool everythingMatched = true;
+    if (guessedWordsCount == 0)
+    {
+        everythingMatched = false;
+    }
+    else
+        for (int i = 0; i < this->wordLength; i++)
+        {
+            if (matches[guessedWordsCount - 1][i].getMatch() != MATCH)
+            {
+                everythingMatched = false;
+                break;
+            }
+        }
+    if (everythingMatched)
+        this->isGuessed = true;
+}
+
+void GameMenu::resetGame()
+{
+    if (matches != nullptr)
+    {
+        for (int i = 0; i < guessedWordsCount; i++)
+        {
+            delete[] matches[i];
+        }
+        delete[] matches;
+        matches = nullptr;
+    }
+    guessedWordsCount = 0;
+    isGuessed = false;
+    if (guessedWords != nullptr)
+    {
+        delete[] guessedWords;
+        guessedWords = nullptr;
+    }
+
+#ifdef CPORTA
+    currentWordIndex = 1176;
+#else
+    srand((unsigned)time(NULL));
+    int random = rand();
+
+    currentWordIndex = random % answerListCount;
+#endif
+    currentWord = &answerList[currentWordIndex];
 }

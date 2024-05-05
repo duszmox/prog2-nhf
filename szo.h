@@ -23,6 +23,12 @@ public:
     inline int getLength() const { return length; }
     Betu *getBetuk() const { return betuk; }
     bool reverseMatch(Match *m) const;
+    bool containsNumber() const;
+    Szo &operator+=(const Betu &b);
+    const char *c_str() const;
 };
 std::ostream &operator<<(std::ostream &os, const Szo &s);
+bool isInWords(const Szo *words, const int len, const Szo &word);
+std::istream &operator>>(std::istream &is, Szo &s);
+
 #endif

@@ -3,7 +3,6 @@ README.pdf
 html/
 latex/
 stats.csv
-*.o
 .DS_Store
+*.o
 main
-main.o

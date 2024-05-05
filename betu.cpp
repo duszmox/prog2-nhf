@@ -35,3 +35,8 @@ std::ostream &operator<<(std::ostream &os, const Betu &b)
     os << b.getBetu();
     return os;
 }
+
+bool Betu::isNumber() const
+{
+    return betu >= '0' && betu <= '9';
+}

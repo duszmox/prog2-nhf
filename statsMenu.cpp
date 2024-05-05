@@ -17,7 +17,7 @@ void StatsMenu::readStats(char *filename = "stats.csv")
     std::ifstream file(filename);
     if (!file.is_open())
     {
-        std::cerr << "Error opening file." << std::endl;
+        throw std::runtime_error("Error opening file.");
     }
     statsCount = 0;
     int bufferSize = 64;

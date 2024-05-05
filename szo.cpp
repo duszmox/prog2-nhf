@@ -1,4 +1,5 @@
 #include "szo.h"
+#include "memtrace.h"
 #include <cstring>
 
 Szo::Szo(const char *s)
@@ -89,24 +90,36 @@ Match *Szo::match(const Szo &s) const
     Match *matches = new Match[length];
     bool visited[length];
     for (int i = 0; i < length; i++)
+    {
         if (betuk[i] == s.betuk[i])
         {
-            visited[i] = true;
             matches[i].setMatch(MATCH);
-            matches[i].setBetu(new Betu(s.betuk[i]));
+            matches[i].setBetu(new Betu(betuk[i]));
+            visited[i] = true;
         }
         else
+        {
             visited[i] = false;
+        }
+    }
 
     for (int i = 0; i < length; i++)
     {
+        if (matches[i].getMatch() == MATCH)
+        {
+            continue;
+        }
         for (int j = 0; j < length; j++)
         {
-            if (betuk[i] == s.betuk[j] && !visited[j])
+            if (visited[j] || i == j)
             {
-                matches[j].setMatch(PARTIAL);
-                matches[j].setBetu(new Betu(s.betuk[j]));
-                visited[i] = true;
+                continue;
+            }
+            if (s.betuk[i] == betuk[j])
+            {
+                matches[i].setMatch(PARTIAL);
+                matches[i].setBetu(new Betu(s.betuk[i]));
+                visited[j] = true;
                 break;
             }
         }
@@ -115,7 +128,7 @@ Match *Szo::match(const Szo &s) const
     {
         if (matches[i].getMatch() == NOMATCH)
         {
-            matches[i].setBetu(new Betu(betuk[i]));
+            matches[i].setBetu(new Betu(s.betuk[i]));
         }
     }
     return matches;
@@ -146,13 +159,12 @@ std::ostream &operator<<(std::ostream &os, const Szo &s)
 }
 bool Szo::reverseMatch(Match *m) const
 {
-    int length = getLength();
     bool visited[length];
     for (int i = 0; i < length; i++)
     {
         if (m[i].getMatch() == MATCH)
         {
-            if (*m[i].getBetu() != betuk[i])
+            if (betuk[i] != *m[i].getBetu())
             {
                 return false;
             }
@@ -161,20 +173,26 @@ bool Szo::reverseMatch(Match *m) const
                 visited[i] = true;
             }
         }
+        else
+        {
+            visited[i] = false;
+        }
     }
     for (int i = 0; i < length; i++)
     {
-        if (visited[i])
-        {
-            continue;
-        }
         if (m[i].getMatch() == PARTIAL)
         {
+            if (betuk[i] == *m[i].getBetu())
+            {
+                return false;
+            }
             bool found = false;
             for (int j = 0; j < length; j++)
             {
-                if (*m[i].getBetu() == betuk[j] && !visited[j])
+                if (betuk[j] == *m[i].getBetu() && !visited[j] && j != i)
                 {
+                    if ((m[j].getMatch() == NOMATCH && *m[j].getBetu() == betuk[j]))
+                        continue;
                     visited[j] = true;
                     found = true;
                     break;
@@ -186,5 +204,90 @@ bool Szo::reverseMatch(Match *m) const
             }
         }
     }
+    for (int i = 0; i < length; i++)
+    {
+        if (m[i].getMatch() == NOMATCH)
+        {
+            for (int j = 0; j < length; j++)
+            {
+                if (betuk[j] == *m[i].getBetu() && !visited[j])
+                {
+                    return false;
+                }
+            }
+        }
+    }
     return true;
+}
+
+bool isInWords(const Szo *words, const int len, const Szo &word)
+{
+    for (int i = 0; i < len; i++)
+    {
+        if (words[i] == word)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Szo::containsNumber() const
+{
+    for (int i = 0; i < length; i++)
+    {
+        if (betuk[i].isNumber())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+Szo &Szo::operator+=(const Betu &b)
+{
+    Betu *temp = new Betu[length + 1];
+    for (int i = 0; i < length; i++)
+    {
+        temp[i] = betuk[i];
+    }
+    temp[length] = b;
+    delete[] betuk;
+    betuk = temp;
+    length++;
+    return *this;
+}
+
+std::istream &operator>>(std::istream &is, Szo &s0)
+{
+    unsigned char ch;
+    s0 = Szo("");                            // üres string, ehhez fűzünk hozzá
+    std::ios_base::fmtflags fl = is.flags(); // eltesszük a régi flag-eket
+    is.setf(std::ios_base::skipws);          // az elején eldobjuk a ws-t
+    while (is >> ch)
+    {
+        is.unsetf(std::ios_base::skipws); // utána pedig már nem
+        if (isspace(ch))
+        {
+            is.putback(ch); // na ezt nem kérjük
+            break;
+        }
+        else
+        {
+            s0 += ch; // végére fűzzük a karaktert
+        }
+    }
+    is.setf(fl); // visszaállítjuk a flag-eket
+    return is;
+}
+
+const char *Szo::c_str() const
+{
+    char *s = new char[length + 1];
+    for (int i = 0; i < length; i++)
+    {
+        s[i] = betuk[i].getBetu();
+    }
+    s[length] = '\0';
+    return s;
 }

@@ -44,3 +44,8 @@ run: $(PROG)
 clean:
 	rm -f $(OBJS) $(PROG)
 
+faszom: 
+	make clean
+	make
+	make run
+
