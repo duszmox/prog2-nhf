@@ -18,9 +18,9 @@ void StatsMenu::show() const
     }
     for (int i = 0; i <= maxAttempts + 1; i++)
     {
-        percentagePerCount[i] = attempsPerCount[i] * 100 / statsCount;
+        percentagePerCount[i] = attempsPerCount[i] * 100 / (statsCount - 1);
     }
-    for (int i = 0; i <= maxAttempts + 1; i++)
+    for (int i = 1; i <= maxAttempts + 1; i++)
     {
         Szo bar;
         int progressBarLength = 12;

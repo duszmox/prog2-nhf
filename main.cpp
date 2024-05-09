@@ -90,6 +90,7 @@ void game()
                     {
                         std::cout << "Exiting..." << std::endl;
                         currMenu = &mainMenu;
+                        continue;
                     }
                 }
                 try
