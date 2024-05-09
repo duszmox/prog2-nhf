@@ -7,12 +7,12 @@ class Menu
     MenuItem *items;
     Menu *parent;
     int itemCount;
-    Szo *error = nullptr;
+    Szo *error;
 
 public:
     Menu(Menu *p);
     Menu(const Menu &m);
-    Menu() : parent(nullptr), itemCount(0), items(nullptr), error(nullptr) {}
+    Menu() : items(nullptr), parent(nullptr), itemCount(0), error(nullptr) {}
     virtual ~Menu();
     void addItem(const char *text, void (*action)());
     void addItem(const char *text, Menu *subMenu);
@@ -33,12 +33,12 @@ class MenuItem
     char *text;
     void (*action)();
     Menu *subMenu;
-    bool selectable = true;
+    bool selectable;
 
 public:
     MenuItem(const char *t, void (*a)());
     MenuItem(const char *t, Menu *s);
-    MenuItem() : text(nullptr), action(nullptr), subMenu(nullptr), selectable(false){};
+    MenuItem() : text(nullptr), action(nullptr), subMenu(nullptr), selectable(true){};
     ~MenuItem();
     char *getText() const;
     void (*getAction())();

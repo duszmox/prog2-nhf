@@ -23,10 +23,6 @@ int GameMenu::getRemainingPossibleWordsCount() const
             if (currArr[j].reverseMatch(matches[i]))
             {
                 tempArr[tempCount++] = currArr[j];
-                // if (i == guessedWordsCount - 1)
-                // {
-                //     std::cout << currArr[j] << std::endl;
-                // }
             }
         }
         if (i != 0)
@@ -123,7 +119,7 @@ void GameMenu::readPossibleWords(char *filename)
 void GameMenu::show() const
 {
     std::cout << "Remaining possible words: " << getRemainingPossibleWordsCount() << std::endl;
-    std::cout << "Current word: " << *currentWord << std::endl;
+    // std::cout << "Current word: " << *currentWord << std::endl;
     if (getError() != nullptr)
     {
         std::cout << "\033[1;31m" << *getError() << "\033[0m" << std::endl;
@@ -272,9 +268,27 @@ void GameMenu::readAnswerList(char *filename)
 
 void GameMenu::guessWord(const Szo &word)
 {
-
-    if (isInWords(possibleWords, possibleWordsCount, word) || isInWords(answerList, answerListCount, word))
+    bool invalid = false;
+    for (int i = 0; i < wordLength; i++)
     {
+        if (word[i].getBetu() < 'a' || word[i].getBetu() > 'z')
+        {
+            invalid = true;
+            break;
+        }
+    }
+    if (invalid || word.getLength() != wordLength)
+    {
+        throw std::runtime_error("Invalid guess!");
+        return;
+    }
+    if (word.isInWords(possibleWords, possibleWordsCount) || word.isInWords(answerList, answerListCount))
+    {
+        if (word.isInWords(guessedWords, guessedWordsCount))
+        {
+            throw std::runtime_error("You have already guessed this word!");
+            return;
+        }
         Szo *temp = new Szo[guessedWordsCount + 1];
         for (int i = 0; i < guessedWordsCount; i++)
         {
@@ -342,7 +356,7 @@ void GameMenu::resetGame()
     }
 
 #ifdef CPORTA
-    currentWordIndex = 1176;
+    currentWordIndex = 1;
 #else
     srand((unsigned)time(NULL));
     int random = rand();

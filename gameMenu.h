@@ -2,7 +2,6 @@
 #define GAME_MENU_H
 #include "menu.h"
 #include "szo.h"
-// #define CPORTA 1
 class GameMenu : public Menu
 {
     Szo *possibleWords;
@@ -15,16 +14,16 @@ class GameMenu : public Menu
     Szo *answerList;
     int answerListCount;
     Match **matches;
-    int wordLength = 0;
-    bool isGuessed = false;
+    int wordLength;
+    bool isGuessed;
 
 public:
-    GameMenu(Menu *p) : Menu(p), guessedWords(nullptr), guessedWordsCount(0), matches(nullptr)
+    GameMenu(Menu *p) : Menu(p), guessedWords(nullptr), guessedWordsCount(0), matches(nullptr), wordLength(0), isGuessed(false)
     {
         possibleWords = nullptr;
         currentWord = nullptr;
-        readPossibleWords("possible.csv");
-        readAnswerList("answerlist.csv");
+        readPossibleWords((char *)"possible.csv");
+        readAnswerList((char *)"answerlist.csv");
 #ifdef CPORTA
         currentWordIndex = 0;
 #else
@@ -37,12 +36,12 @@ public:
         maxGuesses = 6;
         clearError();
     }
-    GameMenu() : Menu(), guessedWords(nullptr), guessedWordsCount(0), matches(nullptr)
+    GameMenu() : Menu(), guessedWords(nullptr), guessedWordsCount(0), matches(nullptr), wordLength(0), isGuessed(false)
     {
         possibleWords = nullptr;
         currentWord = nullptr;
-        readPossibleWords("possible.csv");
-        readAnswerList("answerlist.csv");
+        readPossibleWords((char *)"possible.csv");
+        readAnswerList((char *)"answerlist.csv");
 #ifdef CPORTA
         currentWordIndex = 0;
 #else
@@ -68,6 +67,7 @@ public:
     int getGuessedWordsCount() const { return guessedWordsCount; }
     int getMaxGuesses() const { return maxGuesses; }
     Szo *getGuessedWords() const { return guessedWords; }
+    Match **getMatches() const { return matches; }
     ~GameMenu()
     {
         delete[] possibleWords;

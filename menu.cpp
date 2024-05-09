@@ -92,6 +92,7 @@ MenuItem::MenuItem(const char *t, void (*a)())
     strcpy(text, t);
     action = a;
     subMenu = 0;
+    selectable = true;
 }
 
 MenuItem::MenuItem(const char *t, Menu *s)
@@ -100,6 +101,7 @@ MenuItem::MenuItem(const char *t, Menu *s)
     strcpy(text, t);
     action = 0;
     subMenu = s;
+    selectable = true;
 }
 MenuItem::~MenuItem()
 {
@@ -129,21 +131,6 @@ void MenuItem::operator=(const MenuItem &m)
 
 bool Menu::operator==(const Menu &m) const
 {
-    if (this == nullptr)
-    {
-        if (&m == nullptr)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    if (&m == nullptr)
-    {
-        return false;
-    }
     if (itemCount != m.itemCount)
     {
         return false;

@@ -25,7 +25,6 @@ void StatsMenu::show() const
         Szo bar;
         int progressBarLength = 12;
         int filledBlocks = percentagePerCount[i] / (100 / progressBarLength);
-        int emptyBlocks = progressBarLength - filledBlocks;
 
         // Fill the progress bar string with filled and empty blocks
         for (int i = 0; i < filledBlocks - 1; ++i)
@@ -54,7 +53,7 @@ void StatsMenu::show() const
     std::cout << "Press 0 to return to the main menu." << std::endl;
 }
 
-void StatsMenu::readStats(char *filename = "stats.csv")
+void StatsMenu::readStats(char *filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
@@ -76,11 +75,7 @@ void StatsMenu::readStats(char *filename = "stats.csv")
         stats = newStats;
         statsCount++;
     }
-}
-
-void StatsMenu::updateStats()
-{
-    readStats("stats.csv");
+    file.close();
 }
 
 void StatsMenu::saveStats(char *filename, char attempts, Szo szo)

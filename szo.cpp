@@ -220,23 +220,11 @@ bool Szo::reverseMatch(Match *m) const
     return true;
 }
 
-bool isInWords(const Szo *words, const int len, const Szo &word)
+bool Szo::isInWords(const Szo *words, const int len) const
 {
     for (int i = 0; i < len; i++)
     {
-        if (words[i] == word)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Szo::containsNumber() const
-{
-    for (int i = 0; i < length; i++)
-    {
-        if (betuk[i].isNumber())
+        if (words[i] == *this)
         {
             return true;
         }
