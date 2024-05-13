@@ -22,8 +22,8 @@ public:
     {
         possibleWords = nullptr;
         currentWord = nullptr;
-        readPossibleWords((char *)"possible.csv");
-        readAnswerList((char *)"answerlist.csv");
+        readFile((char *)"possible.csv", possibleWords, possibleWordsCount, wordLength);
+        readFile((char *)"answerlist.csv", answerList, answerListCount, wordLength);
 #ifdef CPORTA
         currentWordIndex = 0;
 #else
@@ -40,8 +40,8 @@ public:
     {
         possibleWords = nullptr;
         currentWord = nullptr;
-        readPossibleWords((char *)"possible.csv");
-        readAnswerList((char *)"answerlist.csv");
+        readFile((char *)"possible.csv", possibleWords, possibleWordsCount, wordLength);
+        readFile((char *)"answerlist.csv", answerList, answerListCount, wordLength);
 #ifdef CPORTA
         currentWordIndex = 0;
 #else
@@ -55,8 +55,7 @@ public:
     }
     void show() const;
     int getRemainingPossibleWordsCount() const;
-    void readPossibleWords(char *filename);
-    void readAnswerList(char *filename);
+    void readFile(char *filename, Szo *&wordList, int &wordListCount, int &wordLength);
     void guessWord(const Szo &word);
     int getAnswerListCount() const { return answerListCount; }
     Szo *getAnswerList() const { return answerList; }
@@ -68,14 +67,6 @@ public:
     int getMaxGuesses() const { return maxGuesses; }
     Szo *getGuessedWords() const { return guessedWords; }
     Match **getMatches() const { return matches; }
-    ~GameMenu()
-    {
-        delete[] possibleWords;
-        delete[] guessedWords;
-        delete[] answerList;
-        for (int i = 0; i < guessedWordsCount; i++)
-            delete[] matches[i];
-        delete[] matches;
-    }
+    ~GameMenu();
 };
 #endif

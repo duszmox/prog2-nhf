@@ -1,8 +1,9 @@
-#include "statsMenu.h"
+#include "statsMenu.hpp"
 #include <iostream>
 #include <fstream>
 #include <cstring>
 
+/// @brief A statisztikák menü megjelenítése
 void StatsMenu::show() const
 {
     std::cout << "Number of guesses per game (%)" << std::endl;
@@ -18,7 +19,7 @@ void StatsMenu::show() const
     }
     for (int i = 0; i <= maxAttempts + 1; i++)
     {
-        percentagePerCount[i] = attempsPerCount[i] * 100 / (statsCount - 1);
+        percentagePerCount[i] = attempsPerCount[i] * 100 / (statsCount);
     }
     for (int i = 1; i <= maxAttempts + 1; i++)
     {
@@ -53,12 +54,16 @@ void StatsMenu::show() const
     std::cout << "Press 0 to return to the main menu." << std::endl;
 }
 
+/// @brief A statisztikák beolvasása fájlból
+/// @param filename A fájl neve
 void StatsMenu::readStats(char *filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
     {
-        throw std::runtime_error("Error opening file.");
+        std::ofstream newFile(filename);
+        newFile.close();
+        file.open(filename);
     }
     statsCount = 0;
     Szo szo;
@@ -76,26 +81,4 @@ void StatsMenu::readStats(char *filename)
         statsCount++;
     }
     file.close();
-}
-
-void StatsMenu::saveStats(char *filename, char attempts, Szo szo)
-{
-    std::ofstream
-        file(filename, std::ios_base::app);
-    if (!file.is_open())
-    {
-        throw std::runtime_error("Error opening file.");
-    }
-    file << attempts << " " << szo << std::endl;
-}
-
-void StatsMenu::saveStats(char *filename, int attempts, Szo szo)
-{
-    std::ofstream
-        file(filename, std::ios_base::app);
-    if (!file.is_open())
-    {
-        throw std::runtime_error("Error opening file.");
-    }
-    file << attempts << " " << szo << std::endl;
 }

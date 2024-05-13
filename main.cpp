@@ -1,159 +1,11 @@
 #include "szo.h"
 #include <iostream>
 #include "gameMenu.h"
-#include "statsMenu.h"
+#include "statsMenu.hpp"
 #include "memtrace.h"
 #include <cstdlib>
 #include "gtest_lite.h"
 #include <sstream>
-
-void game()
-{
-    Menu mainMenu(nullptr);
-    GameMenu gameMenu(&mainMenu);
-    StatsMenu statsMenu(&mainMenu);
-    mainMenu.addItem("Game", &gameMenu);
-    mainMenu.addItem("Stats", &statsMenu);
-    statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
-
-    Menu *currMenu = &mainMenu;
-    while (true)
-    {
-        bool errorChanged = false;
-        currMenu->showLogo();
-        currMenu->show();
-        if (currMenu == &gameMenu)
-        {
-            if (gameMenu.getIsGuessed())
-            {
-                std::cout << "Congratulations! You have guessed the word!" << std::endl;
-                std::cout << "The word was: " << *gameMenu.getCurrentWord() << std::endl;
-                std::cout << "(1) Retry" << std::endl;
-                std::cout << "(0) Back" << std::endl;
-                statsMenu.saveStats(gameMenu.getGuessedWordsCount(), *gameMenu.getCurrentWord());
-                Szo guess;
-                std::cin >> guess;
-                if (guess.getLength() > 1)
-                {
-                    currMenu->setError("Invalid input!");
-                    continue;
-                }
-                switch (guess[0].getBetu())
-                {
-                case '0':
-                    currMenu = &mainMenu;
-                    break;
-                case '1':
-                    gameMenu.resetGame();
-                    break;
-                default:
-                    currMenu->setError("Invalid input!");
-                    errorChanged = true;
-                    break;
-                }
-            }
-            else if (gameMenu.getGuessedWordsCount() == gameMenu.getMaxGuesses())
-            {
-                std::cout << "(1) Retry" << std::endl;
-                std::cout << "(0) Back" << std::endl;
-                statsMenu.saveStats('X', *gameMenu.getCurrentWord());
-                Szo guess;
-                std::cin >> guess;
-                if (guess.getLength() > 1)
-                {
-                    currMenu->setError("Invalid input!");
-                    continue;
-                }
-                switch (guess[0].getBetu())
-                {
-                case '0':
-                    currMenu = &mainMenu;
-                    break;
-                case '1':
-                    gameMenu.resetGame();
-                    break;
-
-                default:
-                    currMenu->setError("Invalid input!");
-                    errorChanged = true;
-                    break;
-                }
-            }
-            else
-            {
-                std::cout << "Enter your guess (or 0 to quit): ";
-                Szo guess;
-                std::cin >> guess;
-                if (guess.getLength() == 1)
-                {
-                    if (guess[0].getBetu() == '0')
-                    {
-                        std::cout << "Exiting..." << std::endl;
-                        currMenu = &mainMenu;
-                        continue;
-                    }
-                }
-                try
-                {
-                    gameMenu.guessWord(guess);
-                }
-                catch (std::runtime_error &e)
-                {
-                    currMenu->setError(Szo(e.what()));
-                    errorChanged = true;
-                }
-            }
-        }
-        else
-        {
-            int selection;
-            std::cin >> selection;
-
-            if (selection == 0)
-            {
-                if (&currMenu->getParent() != nullptr)
-                {
-                    currMenu = &currMenu->getParent();
-                }
-                else
-                {
-                    std::cout << "Exiting..." << std::endl;
-                    break;
-                }
-            }
-            else
-            {
-                if (selection < 0 || selection > currMenu->getItemCount())
-                {
-                    currMenu->setError("Invalid selection!");
-                    errorChanged = true;
-                    continue;
-                }
-                if ((*currMenu)[selection - 1].getSubMenu() != nullptr)
-                {
-                    currMenu->clearError();
-                    currMenu = (*currMenu)[selection - 1].getSubMenu();
-                    if (currMenu == &gameMenu)
-                    {
-                        gameMenu.resetGame();
-                    }
-                    if (currMenu == &statsMenu)
-                    {
-                        statsMenu.readStats();
-                    }
-                }
-                else
-                {
-                    (*currMenu)[selection - 1].getAction()();
-                }
-            }
-        }
-        if (!errorChanged)
-        {
-            currMenu->clearError();
-        }
-    }
-}
 
 int main()
 {
@@ -325,7 +177,158 @@ int main()
     }
     END
 #else
-    game();
+    try
+    {
+        Menu mainMenu(nullptr);
+        GameMenu gameMenu(&mainMenu);
+        StatsMenu statsMenu(&mainMenu);
+        mainMenu.addItem("Game", &gameMenu);
+        mainMenu.addItem("Stats", &statsMenu);
+        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
+
+        Menu *currMenu = &mainMenu;
+        while (true)
+        {
+            bool errorChanged = false;
+            currMenu->showLogo();
+            currMenu->show();
+            if (currMenu == &gameMenu)
+            {
+                if (gameMenu.getIsGuessed())
+                {
+                    std::cout << "Congratulations! You have guessed the word!" << std::endl;
+                    std::cout << "The word was: " << *gameMenu.getCurrentWord() << std::endl;
+                    std::cout << "(1) Retry" << std::endl;
+                    std::cout << "(0) Back" << std::endl;
+                    statsMenu.saveStats(gameMenu.getGuessedWordsCount(), *gameMenu.getCurrentWord());
+                    Szo guess;
+                    std::cin >> guess;
+                    if (guess.getLength() > 1)
+                    {
+                        currMenu->setError("Invalid input!");
+                        continue;
+                    }
+                    switch (guess[0].getBetu())
+                    {
+                    case '0':
+                        currMenu = &mainMenu;
+                        break;
+                    case '1':
+                        gameMenu.resetGame();
+                        break;
+                    default:
+                        currMenu->setError("Invalid input!");
+                        errorChanged = true;
+                        break;
+                    }
+                }
+                else if (gameMenu.getGuessedWordsCount() == gameMenu.getMaxGuesses())
+                {
+                    std::cout << "(1) Retry" << std::endl;
+                    std::cout << "(0) Back" << std::endl;
+                    statsMenu.saveStats('X', *gameMenu.getCurrentWord());
+                    Szo guess;
+                    std::cin >> guess;
+                    if (guess.getLength() > 1)
+                    {
+                        currMenu->setError("Invalid input!");
+                        continue;
+                    }
+                    switch (guess[0].getBetu())
+                    {
+                    case '0':
+                        currMenu = &mainMenu;
+                        break;
+                    case '1':
+                        gameMenu.resetGame();
+                        break;
+
+                    default:
+                        currMenu->setError("Invalid input!");
+                        errorChanged = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    std::cout << "Enter your guess (or 0 to quit): ";
+                    Szo guess;
+                    std::cin >> guess;
+                    if (guess.getLength() == 1)
+                    {
+                        if (guess[0].getBetu() == '0')
+                        {
+                            std::cout << "Exiting..." << std::endl;
+                            currMenu = &mainMenu;
+                            continue;
+                        }
+                    }
+                    try
+                    {
+                        gameMenu.guessWord(guess);
+                    }
+                    catch (std::runtime_error &e)
+                    {
+                        currMenu->setError(Szo(e.what()));
+                        errorChanged = true;
+                    }
+                }
+            }
+            else
+            {
+                int selection;
+                std::cin >> selection;
+
+                if (selection == 0)
+                {
+                    if (&currMenu->getParent() != nullptr)
+                    {
+                        currMenu = &currMenu->getParent();
+                    }
+                    else
+                    {
+                        std::cout << "Exiting..." << std::endl;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (selection < 0 || selection > currMenu->getItemCount())
+                    {
+                        currMenu->setError("Invalid selection!");
+                        errorChanged = true;
+                        continue;
+                    }
+                    if ((*currMenu)[selection - 1].getSubMenu() != nullptr)
+                    {
+                        currMenu->clearError();
+                        currMenu = (*currMenu)[selection - 1].getSubMenu();
+                        if (currMenu == &gameMenu)
+                        {
+                            gameMenu.resetGame();
+                        }
+                        if (currMenu == &statsMenu)
+                        {
+                            statsMenu.readStats();
+                        }
+                    }
+                    else
+                    {
+                        (*currMenu)[selection - 1].getAction()();
+                    }
+                }
+            }
+            if (!errorChanged)
+            {
+                currMenu->clearError();
+            }
+        }
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 #endif
         return 0;
 }

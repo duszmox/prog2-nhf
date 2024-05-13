@@ -21,13 +21,7 @@ public:
     Betu *getBetu() const { return betu; }
     void setMatch(MatchTypes m) { match = m; }
     void setBetu(Betu *b) { betu = b; }
-    ~Match()
-    {
-        if (betu != nullptr)
-        {
-            delete betu;
-        }
-    }
+    ~Match();
 };
 std::ostream &operator<<(std::ostream &os, const Match &m);
 

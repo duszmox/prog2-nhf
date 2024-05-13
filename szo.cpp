@@ -2,6 +2,8 @@
 #include "memtrace.h"
 #include <cstring>
 
+/// @brief Szó konstruktora karaktertömbből
+/// @param s  A karaktertömb
 Szo::Szo(const char *s)
 {
     length = strlen(s);
@@ -12,6 +14,8 @@ Szo::Szo(const char *s)
     }
 }
 
+/// @brief Szó másoló konstruktora
+/// @param s  A másolandó szó
 Szo::Szo(const Szo &s)
 {
     length = s.length;
@@ -22,11 +26,15 @@ Szo::Szo(const Szo &s)
     }
 }
 
+/// @brief Szó destruktora
 Szo::~Szo()
 {
     delete[] betuk;
 }
 
+/// @brief A szó egyenlőség operátora
+/// @param s  A másik szó
+/// @return Az új szó
 Szo &Szo::operator=(const Szo &s)
 {
     if (this != &s)
@@ -42,6 +50,9 @@ Szo &Szo::operator=(const Szo &s)
     return *this;
 }
 
+/// @brief A szó egyenlőség operátora
+/// @param s  A karaktertömb
+/// @return Igaz, ha a szó megegyezik a karaktertömbbel, egyébként hamis
 int Szo::operator==(const Szo &s) const
 {
     if (length != s.length)
@@ -58,11 +69,17 @@ int Szo::operator==(const Szo &s) const
     return 1;
 }
 
+/// @brief A szó egyenlőtlenség operátora
+/// @param s  A másik szó
+/// @return Igaz, ha a szó nem egyezik meg a másikkal, egyébként hamis
 int Szo::operator!=(const Szo &s) const
 {
     return !(*this == s);
 }
 
+/// @brief A szó egyenlőség operátora karaktertömbre
+/// @param s  A karaktertömb
+/// @return Igaz, ha a szó megegyezik a karaktertömbbel, egyébként hamis
 int Szo::operator==(const char *s) const
 {
     int len = strlen(s);
@@ -80,11 +97,17 @@ int Szo::operator==(const char *s) const
     return 1;
 }
 
+/// @brief A szó egyenlőtlenség operátora karaktertömbre
+/// @param s  A karaktertömb
+/// @return Igaz, ha a szó nem egyezik meg a karaktertömbbel, egyébként hamis
 int Szo::operator!=(const char *s) const
 {
     return !(*this == s);
 }
 
+/// @brief Két szó közös betűinek megtalálása
+/// @param s  A másik szó
+/// @return  A megtalált betűk Match tömbje
 Match *Szo::match(const Szo &s) const
 {
     Match *matches = new Match[length];
@@ -134,11 +157,17 @@ Match *Szo::match(const Szo &s) const
     return matches;
 }
 
+/// @brief A szó indexelő operátora
+/// @param i Az index
+/// @return  A szó i-edik betűje
 Betu &Szo::operator[](int i) const
 {
     return betuk[i];
 }
 
+/// @brief A szó konstrukora betűtömbből
+/// @param b A betűtömb
+/// @param l A betűtömb hossza
 Szo::Szo(const Betu *b, int l)
 {
     length = l;
@@ -149,6 +178,10 @@ Szo::Szo(const Betu *b, int l)
     }
 }
 
+/// @brief A szó kiírása
+/// @param os  A kimeneti stream
+/// @param s A szó
+/// @return A kimeneti stream
 std::ostream &operator<<(std::ostream &os, const Szo &s)
 {
     for (int i = 0; i < s.getLength(); i++)
@@ -157,6 +190,10 @@ std::ostream &operator<<(std::ostream &os, const Szo &s)
     }
     return os;
 }
+
+/// @brief A szó match tömbbel való egyezése
+/// @param m A match tömb
+/// @return  Igaz, ha a match tömb megfelel a szónak, egyébként hamis
 bool Szo::reverseMatch(Match *m) const
 {
     bool visited[length];
@@ -220,6 +257,10 @@ bool Szo::reverseMatch(Match *m) const
     return true;
 }
 
+/// @brief Egy szó keresése egy szavak tömbben
+/// @param words A szavak tömbje
+/// @param len A szavak tömbjének hossza
+/// @return  Igaz, ha a szó megtalálható a szavak tömbjében, egyébként hamis
 bool Szo::isInWords(const Szo *words, const int len) const
 {
     for (int i = 0; i < len; i++)
@@ -232,6 +273,9 @@ bool Szo::isInWords(const Szo *words, const int len) const
     return false;
 }
 
+/// @brief Betű hozzáfűzése a szóhoz
+/// @param b A betű
+/// @return Az új szó
 Szo &Szo::operator+=(const Betu &b)
 {
     Betu *temp = new Betu[length + 1];
@@ -246,6 +290,10 @@ Szo &Szo::operator+=(const Betu &b)
     return *this;
 }
 
+/// @brief Szó beolvasása
+/// @param is A bemeneti stream
+/// @param s0  A szó
+/// @return  A bemeneti stream
 std::istream &operator>>(std::istream &is, Szo &s0)
 {
     unsigned char ch;
@@ -269,6 +317,8 @@ std::istream &operator>>(std::istream &is, Szo &s0)
     return is;
 }
 
+/// @brief A szó karaktertömbbé alakítása
+/// @return  A karaktertömb
 const char *Szo::c_str() const
 {
     char *s = new char[length + 1];
@@ -280,6 +330,9 @@ const char *Szo::c_str() const
     return s;
 }
 
+/// @brief Két szó összefűzése
+/// @param s  A másik szó
+/// @return  Az új szó
 Szo Szo::operator+(const Szo &s) const
 {
     Szo temp;

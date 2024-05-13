@@ -3,7 +3,7 @@ PROG = main
 PROG_O = $(PROG).o szo.o betu.o menu.o gameMenu.o statsMenu.o match.o # program object fajljai
 
 # Rajzatablas valtozathoz torolje a kommentet a kovetkezo sorbol
-PROG_H = szo.h betu.h menu.h statsMenu.h gameMenu.h match.h # program header fajljai
+PROG_H = szo.h betu.h menu.h statsMenu.hpp gameMenu.h match.h # program header fajljai
 
 # Rajzatablas valtozathoz torolje a kommentet a kovetkezo sorbol
 
@@ -11,12 +11,12 @@ PROG_L =              # program libjei
 MTRACE_O = memtrace.o # memtrace object fajl
 MTRACE_H = memtrace.h # memtrace header fajlja
 
-CXX = g++ # a C fordito neve
+CXX = clang++ # a C fordito neve
 
 #fordítasi opciok
-CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 -std=c++11 # -DMEMTRACE: memtrace hasznalata
-CXXFLAGS += -g # es legyeb debug info is
-LDFLAGS = -g # debug a linkelesnel is kell
+CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 -DCPORTA # -DMEMTRACE: memtrace hasznalata
+CXXFLAGS +=  # es legyeb debug info is
+LDFLAGS =  # debug a linkelesnel is kell
 
 # osszes object, osszes header osszes lib egyutt
 OBJS = $(PROG_O) $(MTRACE_O)
