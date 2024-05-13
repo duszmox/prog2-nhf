@@ -2,6 +2,9 @@
 #include <iostream>
 #include <cstring>
 #include "szo.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 Menu::Menu(Menu *p)
 {
@@ -198,7 +201,13 @@ Szo *Menu::getError() const
 }
 void Menu::showLogo() const
 {
+#ifdef _WIN32
+    SetConsoleOutputCP(65001);
+    // clear screen
+    system("cls");
+#else
     std::cout << "\033[2J\033[1;1H";
+#endif
     std::cout << "██╗    ██╗ ██████╗ ██████╗ ██████╗ ██╗     ███████╗" << std::endl;
     std::cout << "██║    ██║██╔═══██╗██╔══██╗██╔══██╗██║     ██╔════╝" << std::endl;
     std::cout << "██║ █╗ ██║██║   ██║██████╔╝██║  ██║██║     █████╗" << std::endl;

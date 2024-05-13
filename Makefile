@@ -11,10 +11,10 @@ PROG_L =              # program libjei
 MTRACE_O = memtrace.o # memtrace object fajl
 MTRACE_H = memtrace.h # memtrace header fajlja
 
-CXX = clang++ # a C fordito neve
+CXX = g++ # a C fordito neve
 
 #fordítasi opciok
-CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 
+CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 -std=c++11 # -DMEMTRACE: memtrace hasznalata
 CXXFLAGS += -g # es legyeb debug info is
 LDFLAGS = -g # debug a linkelesnel is kell
 
@@ -42,10 +42,4 @@ run: $(PROG)
 # takaritas igeny szerint
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(PROG)
-
-faszom: 
-	make clean
-	make
-	make run
-
+	rm $(OBJS) $(PROG)
