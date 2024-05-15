@@ -204,6 +204,7 @@ bool Szo::reverseMatch(Match *m) const
         {
             if (betuk[i] != *m[i].getBetu())
             {
+                delete[] visited;
                 return false;
             }
             else
@@ -222,6 +223,7 @@ bool Szo::reverseMatch(Match *m) const
         {
             if (betuk[i] == *m[i].getBetu())
             {
+                delete[] visited;
                 return false;
             }
             bool found = false;
@@ -238,6 +240,7 @@ bool Szo::reverseMatch(Match *m) const
             }
             if (!found)
             {
+                delete[] visited;
                 return false;
             }
         }
@@ -250,6 +253,7 @@ bool Szo::reverseMatch(Match *m) const
             {
                 if (betuk[j] == *m[i].getBetu() && !visited[j])
                 {
+                    delete[] visited;
                     return false;
                 }
             }

@@ -16,6 +16,43 @@ int main()
     mainMenu.addItem("Game", &gameMenu);
     mainMenu.addItem("Stats", &statsMenu);
     statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
+    TEST(Szo Betu, _szoBetu)
+    {
+        Betu b('a');
+        EXPECT_EQ('a', b.getBetu());
+        b.setBetu('b');
+        EXPECT_EQ('b', b.getBetu());
+        EXPECT_EQ(1, b == Betu('b'));
+        EXPECT_EQ(0, b == Betu('c'));
+        EXPECT_EQ(0, b.isNumber());
+        EXPECT_EQ(1, Betu('1').isNumber());
+    }
+    END
+    TEST(Match, _out)
+    {
+        std::stringstream ss;
+        Match m(MATCH, new Betu('a'));
+        ss << m;
+        EXPECT_STREQ("MATCH", ss.str().c_str());
+        m.setMatch(NOMATCH);
+        ss.str("");
+        ss << m;
+        EXPECT_STREQ("NOMATCH", ss.str().c_str());
+        m.setMatch(PARTIAL);
+        ss.str("");
+        ss << m;
+        EXPECT_STREQ("PARTIAL", ss.str().c_str());
+    }
+    END
+    TEST(Menu, _error)
+    {
+        mainMenu.setError(Szo("hiba"));
+        Szo *error = mainMenu.getError();
+        const char *errorStr = error->c_str();
+        EXPECT_STREQ("hiba", errorStr);
+        delete[] errorStr;
+    }
+    END
     TEST(Wordle init, _init)
     {
         EXPECT_EQ(2, mainMenu.getItemCount());
@@ -101,6 +138,7 @@ int main()
     END
     TEST(Wordle stats, _stats)
     {
+        std::remove("stats.csv");
         GameMenu gameMenu2(&mainMenu);
         gameMenu2.guessWord(Szo("crave"));
         gameMenu2.guessWord(Szo("arced"));
@@ -112,6 +150,7 @@ int main()
         statsMenu.readStats();
         EXPECT_EQ(1, statsMenu.getStatsCount());
         const char *word = statsMenu.getStats()[0].getSzo().c_str();
+        EXPECT_EQ(6, statsMenu.getStats()[0].getAttempts());
         EXPECT_STRCASEEQ("cigar", word);
         delete[] word;
     }
