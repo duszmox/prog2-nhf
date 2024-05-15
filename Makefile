@@ -11,10 +11,10 @@ PROG_L =              # program libjei
 MTRACE_O = memtrace.o # memtrace object fajl
 MTRACE_H = memtrace.h # memtrace header fajlja
 
-CXX = clang++ # a C fordito neve
+CXX = g++ # a C fordito neve
 
 #fordítasi opciok
-CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 -DCPORTA # -DMEMTRACE: memtrace hasznalata
+CXXFLAGS = -pedantic -Wall -DMEMTRACE -Dnullptr=0 -DDEBUG  # -DMEMTRACE: memtrace hasznalata
 CXXFLAGS +=  # es legyeb debug info is
 LDFLAGS =  # debug a linkelesnel is kell
 

@@ -111,7 +111,7 @@ int Szo::operator!=(const char *s) const
 Match *Szo::match(const Szo &s) const
 {
     Match *matches = new Match[length];
-    bool visited[length];
+    bool *visited = new bool[length];
     for (int i = 0; i < length; i++)
     {
         if (betuk[i] == s.betuk[i])
@@ -154,6 +154,7 @@ Match *Szo::match(const Szo &s) const
             matches[i].setBetu(new Betu(s.betuk[i]));
         }
     }
+    delete[] visited;
     return matches;
 }
 
@@ -196,7 +197,7 @@ std::ostream &operator<<(std::ostream &os, const Szo &s)
 /// @return  Igaz, ha a match tömb megfelel a szónak, egyébként hamis
 bool Szo::reverseMatch(Match *m) const
 {
-    bool visited[length];
+    bool *visited = new bool[length];
     for (int i = 0; i < length; i++)
     {
         if (m[i].getMatch() == MATCH)
@@ -254,6 +255,7 @@ bool Szo::reverseMatch(Match *m) const
             }
         }
     }
+    delete[] visited;
     return true;
 }
 

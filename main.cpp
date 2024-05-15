@@ -10,14 +10,14 @@
 int main()
 {
 #ifdef CPORTA
+    Menu mainMenu(nullptr);
+    GameMenu gameMenu(&mainMenu);
+    StatsMenu statsMenu(&mainMenu);
+    mainMenu.addItem("Game", &gameMenu);
+    mainMenu.addItem("Stats", &statsMenu);
+    statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
     TEST(Wordle init, _init)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
         EXPECT_EQ(2, mainMenu.getItemCount());
         EXPECT_STRCASEEQ("Game", mainMenu[0].getText());
         EXPECT_STRCASEEQ("Stats", mainMenu[1].getText());
@@ -29,12 +29,7 @@ int main()
     END
     TEST(Wordle guess, _crave)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
+        gameMenu.resetGame();
         gameMenu.guessWord(Szo("crave"));
         EXPECT_EQ(1, gameMenu.getGuessedWordsCount());
         const char *word = gameMenu.getGuessedWords()[0].c_str();
@@ -44,12 +39,7 @@ int main()
     END
     TEST(Wordle guess same twice, _sameWordTwice)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
+        gameMenu.resetGame();
         gameMenu.guessWord(Szo("crave"));
         EXPECT_EQ(1, gameMenu.getGuessedWordsCount());
         const char *word = gameMenu.getGuessedWords()[0].c_str();
@@ -61,12 +51,7 @@ int main()
     END
     TEST(Wordle guess invalid, _invalidGuess)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
+        gameMenu.resetGame();
         EXPECT_THROW(gameMenu.guessWord(Szo("cravee")), std::runtime_error);
         EXPECT_THROW(gameMenu.guessWord(Szo("arggh")), std::runtime_error);
         EXPECT_THROW(gameMenu.guessWord(Szo("cra ve")), std::runtime_error);
@@ -76,20 +61,15 @@ int main()
     END
     TEST(Wordle guess matches, _match)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
-        gameMenu.guessWord(Szo("crave"));
-        EXPECT_EQ('c', gameMenu.getMatches()[0][0].getBetu()->getBetu());
-        EXPECT_EQ('r', gameMenu.getMatches()[0][1].getBetu()->getBetu());
-        EXPECT_EQ('a', gameMenu.getMatches()[0][2].getBetu()->getBetu());
-        EXPECT_EQ('v', gameMenu.getMatches()[0][3].getBetu()->getBetu());
-        EXPECT_EQ('e', gameMenu.getMatches()[0][4].getBetu()->getBetu());
-        EXPECT_EQ(MATCH, gameMenu.getMatches()[0][0].getMatch());
-        EXPECT_EQ(PARTIAL, gameMenu.getMatches()[0][1].getMatch());
+        gameMenu.resetGame();
+        gameMenu.guessWord(Szo("berry"));
+        EXPECT_EQ('b', gameMenu.getMatches()[0][0].getBetu()->getBetu());
+        EXPECT_EQ('e', gameMenu.getMatches()[0][1].getBetu()->getBetu());
+        EXPECT_EQ('r', gameMenu.getMatches()[0][2].getBetu()->getBetu());
+        EXPECT_EQ('r', gameMenu.getMatches()[0][3].getBetu()->getBetu());
+        EXPECT_EQ('y', gameMenu.getMatches()[0][4].getBetu()->getBetu());
+        EXPECT_EQ(PARTIAL, gameMenu.getMatches()[0][0].getMatch());
+        EXPECT_EQ(MATCH, gameMenu.getMatches()[0][1].getMatch());
         EXPECT_EQ(PARTIAL, gameMenu.getMatches()[0][2].getMatch());
         EXPECT_EQ(NOMATCH, gameMenu.getMatches()[0][3].getMatch());
         EXPECT_EQ(NOMATCH, gameMenu.getMatches()[0][4].getMatch());
@@ -97,53 +77,38 @@ int main()
     END
     TEST(Wordle guess remaining, _remaining)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
-        gameMenu.guessWord(Szo("crave"));
-        gameMenu.guessWord(Szo("arced"));
-        gameMenu.guessWord(Szo("arcus"));
-        gameMenu.guessWord(Szo("arcos"));
-        gameMenu.guessWord(Szo("barca"));
-        EXPECT_EQ(3, gameMenu.getRemainingPossibleWordsCount());
+        GameMenu gameMenu2(&mainMenu);
+        gameMenu2.guessWord(Szo("crave"));
+        gameMenu2.guessWord(Szo("arced"));
+        gameMenu2.guessWord(Szo("arcus"));
+        gameMenu2.guessWord(Szo("arcos"));
+        gameMenu2.guessWord(Szo("barca"));
+        EXPECT_EQ(3, gameMenu2.getRemainingPossibleWordsCount());
     }
     END
     TEST(Wordle guessed, _guessed)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
-        gameMenu.guessWord(Szo("crave"));
-        gameMenu.guessWord(Szo("arced"));
-        gameMenu.guessWord(Szo("arcus"));
-        gameMenu.guessWord(Szo("arcos"));
-        gameMenu.guessWord(Szo("barca"));
-        gameMenu.guessWord(Szo("cigar"));
-        EXPECT_EQ(1, gameMenu.getRemainingPossibleWordsCount());
-        EXPECT_EQ(true, gameMenu.getIsGuessed());
+        GameMenu gameMenu2(&mainMenu);
+        gameMenu2.guessWord(Szo("crave"));
+        gameMenu2.guessWord(Szo("arced"));
+        gameMenu2.guessWord(Szo("arcus"));
+        gameMenu2.guessWord(Szo("arcos"));
+        gameMenu2.guessWord(Szo("barca"));
+        gameMenu2.guessWord(Szo("cigar"));
+        EXPECT_EQ(1, gameMenu2.getRemainingPossibleWordsCount());
+        EXPECT_EQ(true, gameMenu2.getIsGuessed());
     }
     END
     TEST(Wordle stats, _stats)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
-        gameMenu.guessWord(Szo("crave"));
-        gameMenu.guessWord(Szo("arced"));
-        gameMenu.guessWord(Szo("arcus"));
-        gameMenu.guessWord(Szo("arcos"));
-        gameMenu.guessWord(Szo("barca"));
-        gameMenu.guessWord(Szo("cigar"));
-        statsMenu.saveStats(gameMenu.getGuessedWordsCount(), *gameMenu.getCurrentWord());
+        GameMenu gameMenu2(&mainMenu);
+        gameMenu2.guessWord(Szo("crave"));
+        gameMenu2.guessWord(Szo("arced"));
+        gameMenu2.guessWord(Szo("arcus"));
+        gameMenu2.guessWord(Szo("arcos"));
+        gameMenu2.guessWord(Szo("barca"));
+        gameMenu2.guessWord(Szo("cigar"));
+        statsMenu.saveStats(gameMenu2.getGuessedWordsCount(), *gameMenu2.getCurrentWord());
         statsMenu.readStats();
         EXPECT_EQ(1, statsMenu.getStatsCount());
         const char *word = statsMenu.getStats()[0].getSzo().c_str();
@@ -153,25 +118,20 @@ int main()
     END
     TEST(Wordle reset, _reset)
     {
-        Menu mainMenu(nullptr);
-        GameMenu gameMenu(&mainMenu);
-        StatsMenu statsMenu(&mainMenu);
-        mainMenu.addItem("Game", &gameMenu);
-        mainMenu.addItem("Stats", &statsMenu);
-        statsMenu.setMaxAttempts(gameMenu.getMaxGuesses());
-        gameMenu.guessWord(Szo("crave"));
-        gameMenu.guessWord(Szo("arced"));
-        gameMenu.guessWord(Szo("arcus"));
-        gameMenu.guessWord(Szo("arcos"));
-        gameMenu.guessWord(Szo("barca"));
-        gameMenu.guessWord(Szo("cigar"));
-        statsMenu.saveStats(gameMenu.getGuessedWordsCount(), *gameMenu.getCurrentWord());
+        GameMenu gameMenu2(&mainMenu);
+        gameMenu2.guessWord(Szo("crave"));
+        gameMenu2.guessWord(Szo("arced"));
+        gameMenu2.guessWord(Szo("arcus"));
+        gameMenu2.guessWord(Szo("arcos"));
+        gameMenu2.guessWord(Szo("barca"));
+        gameMenu2.guessWord(Szo("cigar"));
+        statsMenu.saveStats(gameMenu2.getGuessedWordsCount(), *gameMenu2.getCurrentWord());
         statsMenu.readStats();
-        gameMenu.resetGame();
-        EXPECT_EQ(0, gameMenu.getGuessedWordsCount());
-        EXPECT_EQ(14855, gameMenu.getRemainingPossibleWordsCount());
-        EXPECT_EQ(false, gameMenu.getIsGuessed());
-        const char *word = gameMenu.getCurrentWord()->c_str();
+        gameMenu2.resetGame();
+        EXPECT_EQ(0, gameMenu2.getGuessedWordsCount());
+        EXPECT_EQ(14855, gameMenu2.getRemainingPossibleWordsCount());
+        EXPECT_EQ(false, gameMenu2.getIsGuessed());
+        const char *word = gameMenu2.getCurrentWord()->c_str();
         EXPECT_STRCASEEQ("rebut", word);
         delete[] word;
     }
@@ -191,7 +151,17 @@ int main()
         {
             bool errorChanged = false;
             currMenu->showLogo();
-            currMenu->show();
+            try
+            {
+                currMenu->show();
+            }
+            catch (const std::exception &e)
+            {
+                currMenu = &mainMenu;
+                currMenu->setError(e.what());
+                errorChanged = true;
+                continue;
+            }
             if (currMenu == &gameMenu)
             {
                 if (gameMenu.getIsGuessed())
@@ -276,10 +246,9 @@ int main()
             }
             else
             {
-                int selection;
+                Szo selection;
                 std::cin >> selection;
-
-                if (selection == 0)
+                if (selection == "0")
                 {
                     if (&currMenu->getParent() != nullptr)
                     {
@@ -287,22 +256,24 @@ int main()
                     }
                     else
                     {
+                        std::cout << selection << std::endl;
                         std::cout << "Exiting..." << std::endl;
                         break;
                     }
                 }
                 else
                 {
-                    if (selection < 0 || selection > currMenu->getItemCount())
+                    int selected = selection[0].getBetu() - '0';
+                    if (selection.getLength() != 1 || selection[0].getBetu() < '1' || selection[0].getBetu() > '9' || selection[0].getBetu() - '0' > currMenu->getItemCount())
                     {
-                        currMenu->setError("Invalid selection!");
+                        currMenu->setError("Invalid input!");
                         errorChanged = true;
                         continue;
                     }
-                    if ((*currMenu)[selection - 1].getSubMenu() != nullptr)
+                    if ((*currMenu)[selected - 1].getSubMenu() != nullptr)
                     {
                         currMenu->clearError();
-                        currMenu = (*currMenu)[selection - 1].getSubMenu();
+                        currMenu = (*currMenu)[selected - 1].getSubMenu();
                         if (currMenu == &gameMenu)
                         {
                             gameMenu.resetGame();
@@ -314,7 +285,7 @@ int main()
                     }
                     else
                     {
-                        (*currMenu)[selection - 1].getAction()();
+                        (*currMenu)[selected - 1].getAction()();
                     }
                 }
             }

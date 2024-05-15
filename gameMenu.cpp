@@ -133,7 +133,9 @@ void GameMenu::readFile(char *filename, Szo *&wordList, int &wordListCount, int 
 void GameMenu::show() const
 {
     std::cout << "Remaining possible words: " << getRemainingPossibleWordsCount() << std::endl;
+#ifdef DEBUG
     std::cout << "Current word: " << *currentWord << std::endl;
+#endif
     if (getError() != nullptr)
     {
         std::cout << "\033[1;31m" << *getError() << "\033[0m" << std::endl;
